@@ -5,7 +5,6 @@ from collections import defaultdict
 from django.db.models import F
 from django.http import FileResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views import View
 
 from .models import Flag, Graph, Event, Challenge
 
@@ -27,18 +26,18 @@ def login(request):
     if request.method == 'GET':
         if request.session.get('user', None) is not None:
             return redirect('scoreboard')
-        return render(request, 'login.html')
+        return render(request, 'scoreboard/login.html')
     elif request.method == 'POST':
         graph_data = Graph.objects.all()
         users = set(data.user for data in graph_data)
         if request.POST['username'] in users:
-            return render(request, 'error.html', {'error': 'User already exists'})
+            return render(request, 'scoreboard/error.html', {'error': 'User already exists'})
         request.session['user'] = request.POST['username']
         request.session.modified = True
         # Create a graph data entry for the user
         current_event = get_current_event()
         if current_event is None:
-            return render(request, 'error.html', {'error': 'No current event'})
+            return render(request, 'scoreboard/error.html', {'error': 'No current event'})
         graph_data = Graph.objects.create(event=current_event, user=request.session['user'], score=0,
                                           time=current_event.start_time)
         graph_data.save()
@@ -56,7 +55,7 @@ def scoreboard(request):
             request.session.modified = True
             most_recent_event = Event.objects.filter(start_time__lt=time.time()).order_by('-start_time').first()
             if most_recent_event is None:
-                return render(request, 'error.html', {'error': f"No events have been held"})
+                return render(request, 'scoreboard/error.html', {'error': f"No events have been held"})
             # Get the graph data and find the person with the highest score
             graph_data = Graph.objects.filter(event=most_recent_event)
             players = {}
@@ -68,8 +67,8 @@ def scoreboard(request):
             for player, score in players.items():
                 scores[player] = score
             scores = dict(sorted(scores.items(), key=lambda item: item[1], reverse=True))
-            return render(request, 'previous_event.html', {'scores_leaderboard': scores,
-                                                           'event_name': most_recent_event.name})
+            return render(request, 'scoreboard/previous_event.html', {'scores_leaderboard': scores,
+                                                                      'event_name': most_recent_event.name})
         graph_data = Graph.objects.filter(event=current_event)
         players = defaultdict(int)
         for data in graph_data:
@@ -92,10 +91,10 @@ def scoreboard(request):
             scores[player] = score[-1]
         # sort scores by value descending
         scores = dict(sorted(scores.items(), key=lambda item: item[1], reverse=True))
-        return render(request, 'scoreboard.html', {'players': players,
-                                                   'graph_data': graph_data_score_by_player,
-                                                   'labels': labels, 'scores_leaderboard': scores,
-                                                   'user': request.session['user']})
+        return render(request, 'scoreboard/scoreboard.html', {'players': players,
+                                                              'graph_data': graph_data_score_by_player,
+                                                              'labels': labels, 'scores_leaderboard': scores,
+                                                              'user': request.session['user']})
     elif request.method == 'POST':
         # Check the flag submitted is correct
         # Get the flag object from the database
@@ -107,11 +106,11 @@ def scoreboard(request):
                 flag_object = flag
                 break
         if flag_object is None:
-            return render(request, 'error.html', {'error': 'Invalid Flag'})
+            return render(request, 'scoreboard/error.html', {'error': 'Invalid Flag'})
         # Check if the flag is already submitted
         current_flags = request.session.get('flags', {})
         if new_flag in current_flags.values():
-            return render(request, 'error.html', {'error': 'Flag already submitted'})
+            return render(request, 'scoreboard/error.html', {'error': 'Flag already submitted'})
         submit_time = time.time()
         current_flags[submit_time] = new_flag
         request.session['flags'] = current_flags
@@ -121,7 +120,7 @@ def scoreboard(request):
                                           score=flag_object.points,
                                           time=submit_time)
         graph_data.save()
-        return render(request, 'success.html',
+        return render(request, 'scoreboard/success.html',
                       {'success': f'Flag submitted for {flag_object.points} points!'})
     else:
         return redirect('scoreboard')
@@ -133,9 +132,9 @@ def challenges(request):
     if request.method == 'GET':
         current_event = get_current_event()
         if current_event is None:
-            return render(request, 'error.html', {'error': 'No current event'})
+            return render(request, 'scoreboard/error.html', {'error': 'No current event'})
         challenge_objects = Challenge.objects.filter(event=current_event)
-        return render(request, 'challenges.html', {'challenges': challenge_objects})
+        return render(request, 'scoreboard/challenges.html', {'challenges': challenge_objects})
     return redirect('scoreboard')
 
 
