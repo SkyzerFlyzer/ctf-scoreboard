@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h1 class="text-center">Challenges</h1>
+            <p class="lead text-center">Below are all the challenges for the current event!</p>
+
+            {% for challenge in challenges %}
+                <div class="card mb-4 bg-dark text-light">
+                    <div class="card-body">
+                        <h2 class="card-title">{{ challenge.name }}</h2>
+                        <p class="card-text">{{ challenge.description }}</p>
+                        <p class="card-text"><strong>Flags:</strong> {{ challenge.amount_of_flags }}</p>
+                        <a href="{% url 'challenge_download' challenge_id=challenge.id %}" class="btn btn-primary" download>Download Files</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+```

@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block head %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <meta http-equiv="refresh" content="60"/>
+{% endblock %}
+{% block content %}
+    <div class="container-fluid vw-100 mt-5 text-light" style="min-width: 100vw">
+        <div class="row">
+            <div class="bg-dark p-4 rounded" style="min-width: 100vw">
+                <h1 class="mb-4">Scoreboard</h1>
+                <!-- Create a line graph -->
+                <div style="max-height: 50vh">
+                <canvas id="scores-line-graph" width="100vw" height="400px"></canvas>
+                </div>
+                <script>
+        const timeFormat = 'hh:mm';
+
+        function newDateString(minutes) {
+            var seconds = minutes * 60;
+            return seconds.format(timeFormat);
+        }
+        function getHashCode(string) {
+          let hash = 0;
+          for (let i = 0; i < string.length; i++) {
+            hash = ((hash << 5) - hash) + string.charCodeAt(i); // hash * 32 - hash + current char code
+          }
+          return hash;
+        }
+
+        function getColor(name = "default") {
+            let hash = getHashCode(name);
+            let hue = (hash % 360 + 360) % 360;  // Ensure positive value within 0-360
+            let saturation = 70;  // Adjust as needed
+            let lightness = 50;  // Adjust as needed
+            return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+
+
+        }
+        let chartData = {
+            "labels": [
+                {% for label in labels %}
+                    "{{ label }}",
+                {% endfor %}
+            ],
+        "datasets": [
+            {% for name, scores in graph_data.items %}
+                    {% autoescape on %}
+                    {
+                        label: "{{ name }}",
+                        data: {{ scores }},
+                        fill: false,
+                        borderColor:  getColor("{{ name }}"),
+                        backgroundColor: getColor("{{ name }}"),
+                        lineTension: 0.1,
+                    },
+                    {% endautoescape %}
+            {% endfor %}
+        ]
+        }
+        const config = {
+          type: 'line',
+          data: chartData,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: {
+                  type: 'linear',
+                  position: 'bottom',
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Time Passed (Minutes)',
+                        color: '#fff',
+                  padding: {top: 20, left: 0, right: 0, bottom: 0}
+                }
+              },
+              y: {
+                  beginAtZero: true,
+                display: true,
+                title: {
+                  display: true,
+                  text: 'Score',
+                  color: '#fff',
+                  padding: {top: 30, left: 0, right: 0, bottom: 0}
+                }
+              }
+            }
+          },
+        };
+
+        var ctx = document.getElementById("scores-line-graph").getContext("2d");
+        var myChart = new Chart(ctx, config)
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        myChart.update();
+
+
+
+    </script>
+                <p class="mt-4">Logged in as {{ user }}</p>
+                <h2 class="mt-4">Submit Flag</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="flag" class="form-label">Flag:</label>
+                        <input type="text" id="flag" name="flag" class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+                <h2 class="mt-4">Scoreboard</h2>
+                <div class="table-responsive">
+                    <table class="table table-dark table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for name, score in scores_leaderboard.items %}
+                                <tr>
+                                    <td>{{ name }}</td>
+                                    <td>{{ score }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
