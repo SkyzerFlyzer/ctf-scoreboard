@@ -1,6 +1,6 @@
 {% extends 'scoreboard/base.html' %}
 {% block content %}
-{% for blood in first_bloods %}
+{% for key, blood in first_bloods.items %}
     <div class="row">
         <div class="col-md-4">
             <h2>{{ blood.challenge_name }}: {{ blood.flag_name }}</h2>
