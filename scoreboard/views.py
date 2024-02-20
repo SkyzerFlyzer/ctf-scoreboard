@@ -161,7 +161,7 @@ def first_blood(request):
                           'time': blood.time,
                           'challenge_name': blood.flag.challenge,
                           'flag_name': f"Flag {blood.flag.number}"}
-            key_name = blood_data['challenge_name'] + ' - ' + blood_data['flag_name']
+            key_name = blood_data['challenge_name'].name + ' - ' + blood_data['flag_name']
             if key_name not in first_bloods:
                 first_bloods[key_name] = blood_data
             else:
