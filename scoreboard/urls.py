@@ -9,4 +9,5 @@ urlpatterns = [
     path('scoreboard/', views.scoreboard, name='scoreboard'),
     path('challenges/', views.challenges, name='challenges'),
     path('challenge/<int:challenge_id>/', views.challenge_download, name='challenge_download'),
+    path('first_bloods/', views.first_blood, name='first_bloods'),
 ]
