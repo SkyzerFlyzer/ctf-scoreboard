@@ -6,7 +6,7 @@ from django.db.models import F
 from django.http import FileResponse
 from django.shortcuts import render, redirect, get_object_or_404
 
-from .models import Flag, Graph, Event, Challenge
+from .models import Flag, Graph, Event, Challenge, FlagSubmission
 
 
 # Create your views here.
@@ -144,3 +144,30 @@ def challenge_download(request, challenge_id):
     response = FileResponse(open(file_path, 'rb'))
     response['Content-Disposition'] = 'attachment; filename="{}"'.format(challenge.files.name)
     return response
+
+
+def first_blood(request):
+    if request.session.get('user', None) is None:
+        return redirect('scoreboard:login')
+    if request.method == 'GET':
+        current_event = get_current_event()
+        if current_event is None:
+            return render(request, 'scoreboard/error.html', {'error': 'No current event'})
+        bloods = FlagSubmission.objects.filter(flag__event=current_event)
+        first_bloods = {}
+        for blood in bloods:
+            blood_data = {'user': blood.user,
+                          'time': blood.time,
+                          'challenge_name': blood.flag.challenge,
+                          'flag_name': f"Flag {blood.flag.number}"}
+            key_name = blood_data['challenge_name'] + ' - ' + blood_data['flag_name']
+            if key_name not in first_bloods:
+                first_bloods[key_name] = blood_data
+            else:
+                if blood_data["time"] < first_bloods[key_name]["time"]:
+                    first_bloods[blood.flag] = blood_data
+        for key, value in first_bloods.items():
+            human_time = value['time'] - current_event.start_time
+            value["time"] = time.strftime('%H:%M:%S', time.gmtime(human_time))
+        return render(request, 'scoreboard/first_bloods.html', {'first_bloods': first_bloods})
+    return redirect('scoreboard:scoreboard')

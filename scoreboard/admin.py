@@ -6,4 +6,5 @@ admin.site.register(Event)
 admin.site.register(Flag)
 admin.site.register(Graph)
 admin.site.register(Challenge)
+admin.site.register(FlagSubmission)
 

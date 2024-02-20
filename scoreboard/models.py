@@ -17,18 +17,6 @@ class Event(models.Model):
         super().save(force_insert, force_update, using, update_fields)
 
 
-class Flag(models.Model):
-    name = models.CharField(max_length=255)
-    points = models.IntegerField(default=100)
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.name
-
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        super().save(force_insert, force_update, using, update_fields)
-
-
 class Graph(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     user = models.CharField(max_length=255)
@@ -48,3 +36,26 @@ class Challenge(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Flag(models.Model):
+    name = models.CharField(max_length=255)
+    number = models.IntegerField(default=1)
+    points = models.IntegerField(default=100)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        super().save(force_insert, force_update, using, update_fields)
+
+
+class FlagSubmission(models.Model):
+    flag = models.ForeignKey(Flag, on_delete=models.CASCADE)
+    user = models.CharField(max_length=255)
+    time = models.IntegerField(default=time.time())
+
+    def __str__(self):
+        return f"{self.user} - {self.flag}"

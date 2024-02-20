@@ -1,0 +1,12 @@
+{% extends 'scoreboard/base.html' %}
+{% block content %}
+{% for blood in first_bloods %}
+    <div class="row">
+        <div class="col-md-4">
+            <h2>{{ blood.challenge_name }}: {{ blood.flag_name }}</h2>
+            <p>{{ blood.user }} at {{ blood.time }}</p>
+        </div>
+    </div>
+{% endfor %}
+{% endblock %}
+```
