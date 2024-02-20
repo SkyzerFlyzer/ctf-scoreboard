@@ -41,7 +41,6 @@ def login(request):
         graph_data = Graph.objects.create(event=current_event, user=request.session['user'], score=0,
                                           time=current_event.start_time)
         graph_data.save()
-        print(f"User {request.session['user']} logged in")
         return redirect('scoreboard:scoreboard')
 
 
