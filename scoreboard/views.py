@@ -28,16 +28,16 @@ def login(request):
             return redirect('scoreboard:scoreboard')
         return render(request, 'scoreboard/login.html')
     elif request.method == 'POST':
-        graph_data = Graph.objects.all()
+        current_event = get_current_event()
+        if current_event is None:
+            return render(request, 'scoreboard/error.html', {'error': 'No current event'})
+        graph_data = Graph.objects.filter(event=current_event)
         users = set(data.user for data in graph_data)
         if request.POST['username'] in users:
             return render(request, 'scoreboard/error.html', {'error': 'User already exists'})
         request.session['user'] = request.POST['username']
         request.session.modified = True
         # Create a graph data entry for the user
-        current_event = get_current_event()
-        if current_event is None:
-            return render(request, 'scoreboard/error.html', {'error': 'No current event'})
         graph_data = Graph.objects.create(event=current_event, user=request.session['user'], score=0,
                                           time=current_event.start_time)
         graph_data.save()
@@ -128,14 +128,14 @@ def scoreboard(request):
 
 def challenges(request):
     if request.session.get('user', None) is None:
-        return redirect('scoreboard:loginlogin')
+        return redirect('scoreboard:login')
     if request.method == 'GET':
         current_event = get_current_event()
         if current_event is None:
             return render(request, 'scoreboard/error.html', {'error': 'No current event'})
         challenge_objects = Challenge.objects.filter(event=current_event)
         return render(request, 'scoreboard/challenges.html', {'challenges': challenge_objects})
-    return redirect('scoreboard:scoreboardscoreboard')
+    return redirect('scoreboard:scoreboard')
 
 
 def challenge_download(request, challenge_id):
