@@ -12,7 +12,7 @@
                         <h2 class="card-title">{{ challenge.name }}</h2>
                         <p class="card-text">{{ challenge.description | safe}}</p>
                         <p class="card-text"><strong>Flags:</strong> {{ challenge.amount_of_flags }}</p>
-                        <a href="{% url 'challenge_download' challenge_id=challenge.id %}" class="btn btn-primary" download>Download Files</a>
+                        <a href="{% url 'scoreboard:challenge_download' challenge_id=challenge.id %}" class="btn btn-primary" download>Download Files</a>
                     </div>
                 </div>
             {% endfor %}
