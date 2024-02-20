@@ -4,5 +4,6 @@ from django.apps import AppConfig
 class ScoreboardConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'scoreboard'
+    verbose_name = "django-ctf-scoreboard"
 
 
