@@ -25,7 +25,7 @@ def get_current_event():
 def login(request):
     if request.method == 'GET':
         if request.session.get('user', None) is not None:
-            return redirect('scoreboard')
+            return redirect('scoreboard:scoreboard')
         return render(request, 'scoreboard/login.html')
     elif request.method == 'POST':
         graph_data = Graph.objects.all()
@@ -42,12 +42,12 @@ def login(request):
                                           time=current_event.start_time)
         graph_data.save()
         print(f"User {request.session['user']} logged in")
-        return redirect('scoreboard')
+        return redirect('scoreboard:scoreboard')
 
 
 def scoreboard(request):
     if request.session.get('user', None) is None:
-        return redirect('login')
+        return redirect('scoreboard:login')
     if request.method == 'GET':
         current_event = get_current_event()
         if current_event is None:
@@ -123,19 +123,19 @@ def scoreboard(request):
         return render(request, 'scoreboard/success.html',
                       {'success': f'Flag submitted for {flag_object.points} points!'})
     else:
-        return redirect('scoreboard')
+        return redirect('scoreboard:scoreboard')
 
 
 def challenges(request):
     if request.session.get('user', None) is None:
-        return redirect('login')
+        return redirect('scoreboard:loginlogin')
     if request.method == 'GET':
         current_event = get_current_event()
         if current_event is None:
             return render(request, 'scoreboard/error.html', {'error': 'No current event'})
         challenge_objects = Challenge.objects.filter(event=current_event)
         return render(request, 'scoreboard/challenges.html', {'challenges': challenge_objects})
-    return redirect('scoreboard')
+    return redirect('scoreboard:scoreboardscoreboard')
 
 
 def challenge_download(request, challenge_id):
