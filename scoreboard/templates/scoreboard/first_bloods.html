@@ -1,4 +1,18 @@
 {% extends 'scoreboard/base.html' %}
+{% block head %}
+    <style>
+    .card {
+        background-color: #2c2f33;
+        border-radius: 10px;
+        border: 1px solid #000;
+        cursor: pointer;
+        color: #fff;
+        padding: 16px 31px;
+        text-decoration: none;
+        margin: 10px;
+        }
+    </style>
+{% endblock %}
 {% block content %}
 <div class="container mt-5">
     <h1 class="text-center">First Bloods</h1>
@@ -10,8 +24,8 @@
     {% for key, blood in first_bloods.items %}
         <div class="row mt-4">
             <div class="col-md-8 mx-auto">
-                <div class="card bg-dark text-light">
-                    <div class="card-body text-light">
+                <div class="card">
+                    <div class="card-body">
                         <h2>{{ blood.challenge_name }}: {{ blood.flag_name }}</h2>
                         <p>{{ blood.user }} at {{ blood.time }}</p>
                     </div>
