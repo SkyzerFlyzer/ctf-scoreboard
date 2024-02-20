@@ -119,6 +119,8 @@ def scoreboard(request):
                                           score=flag_object.points,
                                           time=submit_time)
         graph_data.save()
+        flag_submission = FlagSubmission.objects.create(flag=flag_object, user=request.session['user'], time=submit_time)
+        flag_submission.save()
         return render(request, 'scoreboard/success.html',
                       {'success': f'Flag submitted for {flag_object.points} points!'})
     else:
