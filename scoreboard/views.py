@@ -170,5 +170,6 @@ def first_blood(request):
         for key, value in first_bloods.items():
             human_time = value['time'] - current_event.start_time
             value["time"] = time.strftime('%H:%M:%S', time.gmtime(human_time))
+            value["challenge_name"] = value["challenge_name"].name
         return render(request, 'scoreboard/first_bloods.html', {'first_bloods': first_bloods})
     return redirect('scoreboard:scoreboard')
