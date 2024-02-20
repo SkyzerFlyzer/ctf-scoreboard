@@ -41,7 +41,7 @@ class Graph(models.Model):
 
 class Challenge(models.Model):
     name = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(max_length=1024)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     files = models.FileField(upload_to='challenges/')
     amount_of_flags = models.IntegerField(default=1)
